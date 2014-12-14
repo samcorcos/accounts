@@ -3,12 +3,45 @@
 </head>
 
 <body>
-  <h1>Welcome to Meteor!</h1>
-
-  {{> hello}}
+  {{> login}}
 </body>
 
-<template name="hello">
-  <button>Click Me</button>
-  <p>You've pressed the button {{counter}} times.</p>
+<template name='login'>
+  <h1>Login</h1>
+  {{#if currentUser}} <!--Meteor gives us the "currentUser" variable to make it easy for us to figure out who the current user is. It's going to be an object that shows us the currently logged in user. We can use it in an if statement, because if the currentUser is not the currently logged in user, then it will be null, and will be falsy-->
+    <h2>Logged in as {{currentUser.username}}</h2>
+    <p><button id="logout">Log Out</button></p>
+  {{else}}
+    {{#if logginIn}} <!--Meteor also gives us "loggingIn", which tells us if we are in the process of logging in. This is where you would show a spinner, or some kind of text that tells the user that somethign is happening.-->
+      <p>Logging in...</p>
+    {{else}}
+      {{#if creatingAccount}} <!--Meteor gives us "creatingAccount" as well. -->
+        {{> newAccountForm}}
+      {{else}}
+        {{> loginForm}}
+      {{/if}}
+    {{/if}}
+  {{/if}}
 </template>
+
+<template name='newAccountForm'>
+  <input type="text" name="" value="" id="email" placeholder="email" />
+  <input type="text" name="" value="" id="name" placeholder="name" />
+  <input type="text" name="" value="" id="username" placeholder="username" />
+  <input type="password" name="" value="" id="password" placeholder="password" />
+  <button id="createAccount">Create</button>
+  <p id="loginForm">(Login)</p>
+</template>
+
+<template name='loginForm'>
+  <input type="text" name="" value="" id="username" placeholder="username">
+  <input type="password" name="" value="" id="password" placeholder="password">
+  <button name="" id="login">Log In</button>
+  <p id="accountForm">(Create Account)</p>
+</template>
+
+<!-- There are 4 login states that Meteor gives us and we have to account for all of them if we are going to create a custom Account UI.
+1) They might be logged in, in which case, we have to give them the option to log out.
+2) They might not be logged in, in which case we want to give them the option to log in.
+3) And if they are not logged in, we might want to present them with the option to create an account.
+4) The fourth state is the "logging in" state, where you want to show some kind of waiting signal while the user is logging in  -->

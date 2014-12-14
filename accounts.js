@@ -1,23 +1,37 @@
+// We removed accounts-ui because we are going to create our own accounts user interface.
+
 if (Meteor.isClient) {
-  // counter starts at 0
-  Session.setDefault("counter", 0);
 
-  Template.hello.helpers({
-    counter: function () {
-      return Session.get("counter");
+  Template.login.helpers({
+    creatingAccount: function() {
+      return Session.get("creatingAccount");
     }
-  });
+  })
 
-  Template.hello.events({
-    'click button': function () {
-      // increment the counter when button is clicked
-      Session.set("counter", Session.get("counter") + 1);
+  Template.login.events({
+    'click #loginForm': function(e,t) {
+      Session.set("creatingAccount", false);
+    },
+    'click #accountForm': function(e,t) {
+      Session.set('creatingAccount', true);
+    },
+    'click #createAccount': function(e,t) {
+      Session.set('creatingAccount', false); // If the user logs out, we want them to see the login form, instead of the create account form next time they click on the button.
+      Accounts.createUser({                 // If we pass the following into the "createUser" function, which Meteor gives us, we will not only create a user, but the user will also be logged in.
+        username: t.find("#username").value,
+        password: t.find("#password").value,
+        email: t.find("#email").value,
+        profile: {
+          name: t.find("#name").value
+        }
+      });
+    },
+    'click #logout': function(e,t) {
+      Meteor.logout(); // This is another handy function that Meteor gives us for handling users.
+    },
+    'click #login': function(e,t) {
+      Meteor.loginWithPassword(t.find("#username").value, t.find("#password").value); // We are using "Meteor.loginWithPassword", which is a built in function, because we can also use things like "Meteor.loginWithTwitter" or any other third party login if you have that set up.
     }
-  });
-}
+  })
 
-if (Meteor.isServer) {
-  Meteor.startup(function () {
-    // code to run on server at startup
-  });
 }
